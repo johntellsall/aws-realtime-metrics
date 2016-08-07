@@ -1,0 +1,4 @@
+Flask-Sockets
+gunicorn
+werkzeug
+flask
