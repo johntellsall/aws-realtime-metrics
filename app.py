@@ -12,6 +12,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
 async_mode = None
 
 app = Flask(__name__)
+import ipdb ; ipdb.set_trace()
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
@@ -19,14 +20,11 @@ thread = None
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-    count = 0
     while True:
         socketio.sleep(10)
-        count += 1
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
         socketio.emit('my response',
-                      {'data': 'Server: time = {}'.format(time_str),
-                        'count': count},
+                      {'data': 'Server: time = {}'.format(time_str)},
                       namespace='/test')
 
 
