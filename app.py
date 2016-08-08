@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 
 import datetime
+import logging
+import sys
 
+import redis
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
-# Set this variable to "threading", "eventlet" or "gevent" to test the
-# different async modes, or leave it set to None for the application to choose
-# the best option based on installed packages.
-async_mode = None
+logging.basicConfig(stream=sys.stderr) # , level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-import ipdb ; ipdb.set_trace()
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, async_mode=async_mode)
+socketio = SocketIO(app)
+redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
 thread = None
 
 
@@ -23,9 +24,11 @@ def background_thread():
     while True:
         socketio.sleep(10)
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
-        socketio.emit('my response',
-                      {'data': 'Server: time = {}'.format(time_str)},
-                      namespace='/test')
+        stats = redis_store.hgetall('stats')
+        response = {'stats': stats, 'time': time_str}
+    #         print('response: %s', response)
+
+        socketio.emit('my response', response, namespace='/test')
 
 
 @app.route('/')
