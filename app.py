@@ -10,8 +10,6 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
 logging.basicConfig(stream=sys.stderr) # , level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
