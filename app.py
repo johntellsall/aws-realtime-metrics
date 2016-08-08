@@ -49,5 +49,10 @@ def test_connect():
     emit('my response', {'data': 'Connected', 'count': 0})
 
 
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected', request.sid)
+
+
 if __name__ == '__main__':
     socketio.run(app, debug=True)
