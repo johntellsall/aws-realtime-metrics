@@ -13,6 +13,9 @@ def test_boto3():
 
 @mock_sns
 def test_sns():
-    #sns = boto3.resource('sns')
-    client = boto3.client()
+    client = boto3.client('sns', 'us-east-1')
     response = client.create_topic(Name='upvote')
+    upvote_arn = response['TopicArn']
+
+    response = client.publish(TopicArn=upvote_arn, Message='beer')
+    assert len(response['MessageId'])
