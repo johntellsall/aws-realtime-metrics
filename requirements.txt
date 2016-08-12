@@ -12,3 +12,4 @@ ipdb
 flask-redis
 moto
 pytest-flask
+boto3
