@@ -10,6 +10,10 @@ virtualenv --python=$(which python2) venv
 pip install -qr ./requirements.txt
 sudo apt install redis-server
 
+### dev mode (local, no AWS)
+
+gem install fake_sqs
+
 ## Run
 
 python ./app.py

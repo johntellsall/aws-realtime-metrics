@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# USAGE
+# fuser -k 5000/tcp ; FLASK_APP=app.py flask run
+
 import datetime
 import logging
 import sys
@@ -10,8 +13,12 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
 logging.basicConfig(stream=sys.stderr) # , level=logging.DEBUG)
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'secret!'
+    return app
+
+app = create_app()
 socketio = SocketIO(app)
 redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
 thread = None
@@ -53,4 +60,11 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, use_reloader=True)
+    if 0:
+        socketio.run(app, debug=True, use_reloader=True)
+    else:
+        import eventlet
+        import ipdb ; ipdb.set_trace()
+        sio = socketio.server(async_mode='eventlet')
+        s_app = socketio.Middleware(sio, app)
+        eventlet.wsgi.server(eventlet.listen(('', 5000)), s_app)

@@ -10,3 +10,5 @@ Werkzeug==0.10.4
 eventlet
 ipdb
 flask-redis
+moto
+pytest-flask
