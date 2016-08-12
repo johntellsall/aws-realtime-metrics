@@ -1,18 +1,5 @@
-import boto
 import boto3
-from boto.s3.key import Key
-from moto import mock_s3
-
-
-@mock_s3
-def test_my_model_save():
-    conn = boto.connect_s3()
-    bucket = conn.create_bucket('mybucket')
-
-    k = Key(bucket, 'beer')
-    k.set_contents_from_string('tasty')
-
-    assert conn.get_bucket('mybucket').get_key('beer').get_contents_as_string() == 'tasty'
+from moto import mock_s3, mock_sns
 
 
 @mock_s3
@@ -23,3 +10,9 @@ def test_boto3():
 
     assert s3.Object('mybucket', 'beer').get()['Body'].read() == 'tasty3'
     assert bucket.Object('beer').get()['Body'].read() == 'tasty3'
+
+@mock_sns
+def test_sns():
+    #sns = boto3.resource('sns')
+    client = boto3.client()
+    response = client.create_topic(Name='upvote')
