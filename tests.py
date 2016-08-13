@@ -28,13 +28,11 @@ def test_sns():
 
 @mock_sqs
 def test_sqs():
-    client = boto3.client('sqs', 'us-east-1')
-    response = client.create_queue(QueueName='votes')
-    queue_url = response['QueueUrl']
+    sqs = boto3.resource('sqs', 'us-east-1')
+    queue = sqs.create_queue(QueueName='votes')
+    # queue_url = response['QueueUrl']
 
-    client.send_message(
-        QueueUrl=queue_url,
-        MessageBody=json.dumps({'beer': 'tasty'}))
+    send_message(MessageBody=json.dumps({'beer': 'tasty'})
 
-    messages = client.receive_messages(QueueUrl=queue_url)
+    messages = queue.receive_messages()
     import ipdb ; ipdb.set_trace()
