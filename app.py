@@ -5,22 +5,40 @@
 
 import datetime
 import logging
-import sys
+import logging.config
 
 import redis
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
-logging.basicConfig(stream=sys.stderr) # , level=logging.DEBUG)
+logging_config = dict(
+    version = 1,
+    formatters = {
+        'f': {'format':
+              '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}
+        },
+    handlers = {
+        'h': {'class': 'logging.StreamHandler',
+              'formatter': 'f',
+              'level': logging.DEBUG}
+        },
+    root = {
+        'handlers': ['h'],
+        'level': logging.DEBUG,
+        },
+)
+logging.config.dictConfig(logging_config)
+
 def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret!'
-    return app
+    myapp = Flask(__name__)
+    myapp.config['SECRET_KEY'] = 'secret!'
+    return myapp
 
 app = create_app()
-socketio = SocketIO(app)
 redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
+socketio = SocketIO(app)
+
 thread = None
 
 
@@ -31,6 +49,7 @@ def background_thread():
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
         stats = redis_store.hgetall('stats')
         response = {'stats': stats, 'time': time_str}
+        logging.error('response: %s', response)
         socketio.emit('my response', response, namespace='/test')
 
 
@@ -59,12 +78,17 @@ def test_disconnect():
     print('Client disconnected', request.sid)
 
 
+# @socketio.on_error_defaulthandler
+# def default_error_handler(err):
+#     print 'UHOH', err
+#     logging.error('socketio: %s', err)
+
+
 if __name__ == '__main__':
-    if 0:
+    if 1:
         socketio.run(app, debug=True, use_reloader=True)
     else:
         import eventlet
-        import ipdb ; ipdb.set_trace()
-        sio = socketio.server(async_mode='eventlet')
+        sio = socketio.server.Server(async_mode='eventlet')
         s_app = socketio.Middleware(sio, app)
         eventlet.wsgi.server(eventlet.listen(('', 5000)), s_app)
