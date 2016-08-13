@@ -30,9 +30,9 @@ def test_sns():
 def test_sqs():
     sqs = boto3.resource('sqs', 'us-east-1')
     queue = sqs.create_queue(QueueName='votes')
-    # queue_url = response['QueueUrl']
 
-    send_message(MessageBody=json.dumps({'beer': 'tasty'})
+    queue.send_message(MessageBody=json.dumps({'beer': 'tasty'}))
 
     messages = queue.receive_messages()
-    import ipdb ; ipdb.set_trace()
+    assert len(messages)
+    assert messages[0].body == '{"beer": "tasty"}'
