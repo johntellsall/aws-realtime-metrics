@@ -23,6 +23,10 @@ logging_config = dict(
               'formatter': 'f',
               'level': logging.DEBUG}
         },
+    loggers = {
+        'engineio': {'level': logging.ERROR},
+        'socketio': {'level': logging.ERROR},
+        },
     root = {
         'handlers': ['h'],
         'level': logging.DEBUG,
@@ -49,7 +53,7 @@ def background_thread():
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
         stats = redis_store.hgetall('stats')
         response = {'stats': stats, 'time': time_str}
-        logging.error('response: %s', response)
+        logging.debug('response: %s', response)
         socketio.emit('my response', response, namespace='/test')
 
 
