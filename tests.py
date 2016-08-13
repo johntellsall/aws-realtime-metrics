@@ -1,5 +1,7 @@
+import json
+
 import boto3
-from moto import mock_s3, mock_sns
+from moto import mock_s3, mock_sns, mock_sqs
 
 
 @mock_s3
@@ -22,3 +24,17 @@ def test_sns():
     response = client.publish(TopicArn=upvote_arn, Message='beer')
 
     assert len(response['MessageId'])
+
+
+@mock_sqs
+def test_sqs():
+    client = boto3.client('sqs', 'us-east-1')
+    response = client.create_queue(QueueName='votes')
+    queue_url = response['QueueUrl']
+
+    client.send_message(
+        QueueUrl=queue_url,
+        MessageBody=json.dumps({'beer': 'tasty'}))
+
+    messages = client.receive_messages(QueueUrl=queue_url)
+    import ipdb ; ipdb.set_trace()
