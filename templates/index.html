@@ -33,6 +33,10 @@
                 $('#log').append('<br>' + $('<div/>').text('Received: ' + JSON.stringify(msg)).html());
             });
 
+            $("a.vote").bind("click", function(event) {
+                console.log(this);
+                jQuery.post('/vote', {value: this.id});
+});
         });
     </script>
 </head>
@@ -42,7 +46,7 @@
 <img src="http://placekitten.com/300/300">
 <br />
 
-Vote: <a href="/vote/up">UP</a> - <a href="/vote/down">DOWN</a>
+Vote: <a class="vote" id="up">UP</a> - <a class="vote" id="down">DOWN</a>
     <h1>Realtime Stats</h1>
     <h2>Receive:</h2>
     <div id="log"></div>
