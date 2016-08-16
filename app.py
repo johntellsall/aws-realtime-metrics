@@ -4,6 +4,7 @@
 # fuser -k 5000/tcp ; FLASK_APP=app.py flask run
 
 import datetime
+import json
 import logging
 import logging.config
 
@@ -11,6 +12,11 @@ import redis
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
+
+
+OK_RESPONSE = (json.dumps({'success':True}), 200, 
+    {'ContentType':'application/json'} )
+
 
 logging_config = dict(
     version = 1,
@@ -47,7 +53,6 @@ thread = None
 
 
 def background_thread():
-    """Example of how to send server generated events to clients."""
     while True:
         socketio.sleep(10)
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
@@ -61,6 +66,11 @@ def background_thread():
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
+@csrf.exempt
+@app.route('/vote', methods=['POST'])
+def vote():
+    app.logger.error('vote: %s', request.values['vote'])
+    return OK_RESPONSE
 
 @socketio.on('my event', namespace='/test')
 def test_message(message):

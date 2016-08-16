@@ -34,9 +34,8 @@
             });
 
             $("a.vote").bind("click", function(event) {
-                console.log(this);
                 jQuery.post('/vote', {value: this.id});
-});
+            });
         });
     </script>
 </head>
