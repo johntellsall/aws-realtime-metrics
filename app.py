@@ -66,10 +66,9 @@ def background_thread():
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
-@csrf.exempt
 @app.route('/vote', methods=['POST'])
 def vote():
-    app.logger.error('vote: %s', request.values['vote'])
+    app.logger.info('vote: %s', request.values['value'])
     return OK_RESPONSE
 
 @socketio.on('my event', namespace='/test')
