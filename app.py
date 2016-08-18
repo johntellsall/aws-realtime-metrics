@@ -57,12 +57,7 @@ thread = None
 
 
 def get_votes_dict():
-    def get_votes():
-        try:
-            return int(redis_store.get('votes'))
-        except ValueError:
-            return None
-    return {'votes': get_votes()}
+    return redis_store.hgetall('vote')
 
 
 def background_thread():
@@ -82,11 +77,13 @@ def index():
 def vote():
     if request.method == 'POST':
         vote_value = request.values['value']
-        app.logger.info('vote: %s', vote_value)
-        vote_incr = {'up': +1, 'down': -1}.get(vote_value)
-        if vote_incr:
-            redis_store.incrby('votes', vote_incr)
-    return json_response(get_votes_dict())
+        if vote_value not in ('up', 'down'):
+            return None # TODO return 400
+        redis_store.hincrby('vote', 'count', 1)
+        if vote_value == 'up':
+            redis_store.hincrby('vote', 'up_count', 1)
+    vdict = get_votes_dict()
+    return json_response(vdict)
 
 
 @socketio.on('my event', namespace='/test')
