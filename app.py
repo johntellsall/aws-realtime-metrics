@@ -46,8 +46,8 @@ def create_app():
     myapp.config['SECRET_KEY'] = 'secret!'
     return myapp
 
-def init_db(redis):
-    redis.set('votes', 0)
+def init_db(redis_db):
+    redis_db.set('votes', 0)
 
 app = create_app()
 redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -79,7 +79,11 @@ def vote():
         vote_incr = {'up': +1, 'down': -1}.get(vote_value)
         if vote_incr:
             redis_store.incrby('votes', vote_incr)
-    return OK_RESPONSE
+    try:
+        value = redis_store.get('votes')
+    except ValueError:
+        value = None
+    return json_response({'value': value})
 
 
 @socketio.on('my event', namespace='/test')
