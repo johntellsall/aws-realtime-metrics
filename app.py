@@ -3,10 +3,7 @@
 # USAGE
 # fuser -k 5000/tcp ; FLASK_APP=app.py flask run
 
-import datetime
 import json
-import logging
-import logging.config
 
 import redis
 from flask import Flask, render_template, session, request
@@ -14,32 +11,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
 
-OK_RESPONSE = (json.dumps({'success':True}), 200, 
-    {'ContentType':'application/json'} )
 def json_response(data):
     return json.dumps(data), 200, {'ContentType':'application/json'}
-
-# logging_config = dict(
-#     version = 1,
-#     formatters = {
-#         'f': {'format':
-#               '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}
-#         },
-#     handlers = {
-#         'h': {'class': 'logging.StreamHandler',
-#               'formatter': 'f',
-#               'level': logging.DEBUG}
-#         },
-#     loggers = {
-#         'engineio': {'level': logging.ERROR},
-#         'socketio': {'level': logging.ERROR},
-#         },
-#     root = {
-#         'handlers': ['h'],
-#         'level': logging.DEBUG,
-#         },
-# )
-# logging.config.dictConfig(logging_config)
 
 def create_app():
     myapp = Flask(__name__)
@@ -64,7 +37,7 @@ def background_thread():
     while True:
         socketio.sleep(10)
         vdict = get_votes_dict()
-        logging.debug('votes dict: %s', vdict)
+        app.logger.debug('votes dict: %s', vdict)
         socketio.emit('my response', vdict, namespace='/test')
 
 
@@ -103,7 +76,7 @@ def test_connect():
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
-    print('Client disconnected', request.sid)
+    app.logger.info('Client disconnected', request.sid)
 
 
 if __name__ == '__main__':
