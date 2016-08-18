@@ -16,34 +16,38 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
 
 OK_RESPONSE = (json.dumps({'success':True}), 200, 
     {'ContentType':'application/json'} )
+def json_response(data):
+    return json.dumps(data), 200, {'ContentType':'application/json'}
 
-
-logging_config = dict(
-    version = 1,
-    formatters = {
-        'f': {'format':
-              '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}
-        },
-    handlers = {
-        'h': {'class': 'logging.StreamHandler',
-              'formatter': 'f',
-              'level': logging.DEBUG}
-        },
-    loggers = {
-        'engineio': {'level': logging.ERROR},
-        'socketio': {'level': logging.ERROR},
-        },
-    root = {
-        'handlers': ['h'],
-        'level': logging.DEBUG,
-        },
-)
-logging.config.dictConfig(logging_config)
+# logging_config = dict(
+#     version = 1,
+#     formatters = {
+#         'f': {'format':
+#               '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}
+#         },
+#     handlers = {
+#         'h': {'class': 'logging.StreamHandler',
+#               'formatter': 'f',
+#               'level': logging.DEBUG}
+#         },
+#     loggers = {
+#         'engineio': {'level': logging.ERROR},
+#         'socketio': {'level': logging.ERROR},
+#         },
+#     root = {
+#         'handlers': ['h'],
+#         'level': logging.DEBUG,
+#         },
+# )
+# logging.config.dictConfig(logging_config)
 
 def create_app():
     myapp = Flask(__name__)
     myapp.config['SECRET_KEY'] = 'secret!'
     return myapp
+
+def init_db(redis):
+    redis.set('votes', 0)
 
 app = create_app()
 redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -66,10 +70,17 @@ def background_thread():
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
-@app.route('/vote', methods=['POST'])
+
+@app.route('/vote', methods=['GET', 'POST'])
 def vote():
-    app.logger.info('vote: %s', request.values['value'])
+    if request.method == 'POST':
+        vote_value = request.values['value']
+        app.logger.info('vote: %s', vote_value)
+        vote_incr = {'up': +1, 'down': -1}.get(vote_value)
+        if vote_incr:
+            redis_store.incrby('votes', vote_incr)
     return OK_RESPONSE
+
 
 @socketio.on('my event', namespace='/test')
 def test_message(message):
@@ -98,6 +109,7 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
+    init_db(redis_store)
     if 1:
         socketio.run(app, debug=True, use_reloader=True)
     else:
