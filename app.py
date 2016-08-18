@@ -6,9 +6,8 @@
 import json
 
 import redis
-from flask import Flask, render_template, session, request
-from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO
 
 
 def json_response(data):
@@ -56,14 +55,8 @@ def vote():
         if vote_value == 'up':
             redis_store.hincrby('vote', 'up_count', 1)
     vdict = get_votes_dict()
+    socketio.emit('my response', vdict, namespace='/test')
     return json_response(vdict)
-
-
-@socketio.on('my event', namespace='/test')
-def test_message(message):
-    session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my response',
-         {'data': message['data'], 'count': session['receive_count']})
 
 
 @socketio.on('connect', namespace='/test')
@@ -71,7 +64,6 @@ def test_connect():
     global thread
     if thread is None:
         thread = socketio.start_background_task(target=background_thread)
-    emit('my response', {'data': 'Connected', 'count': 0})
 
 
 @socketio.on('disconnect', namespace='/test')
