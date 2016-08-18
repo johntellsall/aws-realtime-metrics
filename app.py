@@ -56,14 +56,21 @@ socketio = SocketIO(app)
 thread = None
 
 
+def get_votes_dict():
+    def get_votes():
+        try:
+            return int(redis_store.get('votes'))
+        except ValueError:
+            return None
+    return {'votes': get_votes()}
+
+
 def background_thread():
     while True:
         socketio.sleep(10)
-        time_str = datetime.datetime.now().strftime('%H:%M:%S')
-        stats = redis_store.hgetall('stats')
-        response = {'stats': stats, 'time': time_str}
-        logging.debug('response: %s', response)
-        socketio.emit('my response', response, namespace='/test')
+        vdict = get_votes_dict()
+        logging.debug('votes dict: %s', vdict)
+        socketio.emit('my response', vdict, namespace='/test')
 
 
 @app.route('/')
@@ -79,11 +86,7 @@ def vote():
         vote_incr = {'up': +1, 'down': -1}.get(vote_value)
         if vote_incr:
             redis_store.incrby('votes', vote_incr)
-    try:
-        value = redis_store.get('votes')
-    except ValueError:
-        value = None
-    return json_response({'value': value})
+    return json_response(get_votes_dict())
 
 
 @socketio.on('my event', namespace='/test')
@@ -106,18 +109,6 @@ def test_disconnect():
     print('Client disconnected', request.sid)
 
 
-# @socketio.on_error_defaulthandler
-# def default_error_handler(err):
-#     print 'UHOH', err
-#     logging.error('socketio: %s', err)
-
-
 if __name__ == '__main__':
     init_db(redis_store)
-    if 1:
-        socketio.run(app, debug=True, use_reloader=True)
-    else:
-        import eventlet
-        sio = socketio.server.Server(async_mode='eventlet')
-        s_app = socketio.Middleware(sio, app)
-        eventlet.wsgi.server(eventlet.listen(('', 5000)), s_app)
+    socketio.run(app, debug=True, use_reloader=True)
