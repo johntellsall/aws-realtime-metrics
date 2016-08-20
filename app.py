@@ -6,7 +6,7 @@
 import json
 
 import redis
-from flask import Flask, render_template, request
+from flask import Flask, g, render_template, request
 from flask_socketio import SocketIO
 
 
@@ -15,21 +15,38 @@ def create_app():
     myapp.config['SECRET_KEY'] = 'secret!'
     return myapp
 
-def init_db(redis_db):
-    redis_db.set('votes', 0)
+
+class VoteStore(object):
+    def __init__(self):
+        self.db = redis.StrictRedis()
+
+    def reset(self):
+        self.db.set('votes', 0)
+
+    def get_all(self):
+        return self.db.hgetall('vote')
+
+    def vote(self, up):
+        self.db.hincrby('vote', 'count', 1)
+        if up:
+            self.db.hincrby('vote', 'up_count', 1)
+
+def get_db():
+    db = getattr(g, 'db', None)
+    if db is None:
+        g.db = VoteStore()
+        g.db.reset()
+    return g.db
 
 app = create_app()
-redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
 socketio = SocketIO(app, async_mode='gevent')
 
 thread = None
 
 
+
 def json_response(data):
     return json.dumps(data), 200, {'ContentType':'application/json'}
-
-def get_votes_dict():
-    return redis_store.hgetall('vote')
 
 
 def background_thread():
@@ -38,9 +55,9 @@ def background_thread():
     '''
     while True:
         socketio.sleep(10)
-        vdict = get_votes_dict()
+        vdict = g.db.get_all()
         app.logger.debug('votes dict: %s', vdict)
-        socketio.emit('my response', vdict, namespace='/test')
+        socketio.emit('my response', vdict, namespace='/vote')
 
 
 @app.route('/')
@@ -54,22 +71,21 @@ def vote():
         vote_value = request.values['value']
         if vote_value not in ('up', 'down'):
             return None # TODO return 400
-        redis_store.hincrby('vote', 'count', 1)
-        if vote_value == 'up':
-            redis_store.hincrby('vote', 'up_count', 1)
-    vdict = get_votes_dict()
-    socketio.emit('my response', vdict, namespace='/test')
+        g.db.vote(up=(vote_value == 'up'))
+    vdict = g.db.get_all()
+    socketio.emit('my response', vdict, namespace='/')
     return json_response(vdict)
 
 
-@socketio.on('connect', namespace='/test')
+@socketio.on('connect', namespace='')
 def test_connect():
     global thread
+    app.logger.info('sid=%s: Client connected', request.sid)
     if thread is None:
         thread = socketio.start_background_task(target=background_thread)
 
 
-@socketio.on('disconnect', namespace='/test')
+@socketio.on('disconnect', namespace='')
 def test_disconnect():
     app.logger.info('sid=%s: Client disconnected', request.sid)
 
@@ -79,6 +95,11 @@ def default_error_handler(err):
     app.logger.error('UHOH: %s', err)
 
 
+# @app.cli.command('initdb')
+def initdb_command():
+    g.db = VoteStore()
+    g.db.reset()
+
+
 if __name__ == '__main__':
-    init_db(redis_store)
     socketio.run(app, debug=True, use_reloader=True)
