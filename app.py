@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # USAGE
-# fuser -k 5000/tcp ; FLASK_APP=app.py flask run
+# fuser -k 5000/tcp ; python app.py
 
 import json
 
@@ -9,9 +9,6 @@ import redis
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 
-
-def json_response(data):
-    return json.dumps(data), 200, {'ContentType':'application/json'}
 
 def create_app():
     myapp = Flask(__name__)
@@ -28,11 +25,17 @@ socketio = SocketIO(app, async_mode='gevent')
 thread = None
 
 
+def json_response(data):
+    return json.dumps(data), 200, {'ContentType':'application/json'}
+
 def get_votes_dict():
     return redis_store.hgetall('vote')
 
 
 def background_thread():
+    '''
+    send all votes to all clients
+    '''
     while True:
         socketio.sleep(10)
         vdict = get_votes_dict()
