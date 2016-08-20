@@ -31,15 +31,10 @@ class VoteStore(object):
         if up:
             self.db.hincrby('vote', 'up_count', 1)
 
-def get_db():
-    db = getattr(g, 'db', None)
-    if db is None:
-        g.db = VoteStore()
-        g.db.reset()
-    return g.db
-
 app = create_app()
 socketio = SocketIO(app, async_mode='gevent')
+vote_db = VoteStore()
+vote_db.reset()
 
 thread = None
 
@@ -55,7 +50,7 @@ def background_thread():
     '''
     while True:
         socketio.sleep(10)
-        vdict = g.db.get_all()
+        vdict = vote_db.get_all()
         app.logger.debug('votes dict: %s', vdict)
         socketio.emit('my response', vdict, namespace='/vote')
 
@@ -71,8 +66,8 @@ def vote():
         vote_value = request.values['value']
         if vote_value not in ('up', 'down'):
             return None # TODO return 400
-        g.db.vote(up=(vote_value == 'up'))
-    vdict = g.db.get_all()
+        vote_db.vote(up=(vote_value == 'up'))
+    vdict = vote_db.get_all()
     socketio.emit('my response', vdict, namespace='/')
     return json_response(vdict)
 
@@ -95,10 +90,10 @@ def default_error_handler(err):
     app.logger.error('UHOH: %s', err)
 
 
-# @app.cli.command('initdb')
-def initdb_command():
-    g.db = VoteStore()
-    g.db.reset()
+# # @app.cli.command('initdb')
+# def initdb_command():
+#     vote_d = VoteStore()
+#     vote_d.reset()
 
 
 if __name__ == '__main__':
