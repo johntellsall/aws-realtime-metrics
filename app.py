@@ -23,7 +23,7 @@ def init_db(redis_db):
 
 app = create_app()
 redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='gevent')
 
 thread = None
 
@@ -68,7 +68,12 @@ def test_connect():
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
-    app.logger.info('Client disconnected', request.sid)
+    app.logger.info('sid=%s: Client disconnected', request.sid)
+
+
+@socketio.on_error_default
+def default_error_handler(err):
+    app.logger.error('UHOH: %s', err)
 
 
 if __name__ == '__main__':
