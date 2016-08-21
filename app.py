@@ -39,7 +39,6 @@ vote_db.reset()
 thread = None
 
 
-
 def json_response(data):
     return json.dumps(data), 200, {'ContentType':'application/json'}
 
@@ -54,6 +53,8 @@ def background_thread():
         app.logger.debug('votes dict: %s', vdict)
         socketio.emit('votes', vdict, namespace='/vote')
 
+
+# :::::::::::::::::::::::::::::::::::::::::::::::::: WEB
 
 @app.route('/')
 def index():
@@ -70,6 +71,21 @@ def vote():
     vdict = vote_db.get_all()
     socketio.emit('votes', vdict, namespace='/')
     return json_response(vdict)
+
+
+# :::::::::::::::::::::::::::::::::::::::::::::::::: SocketIO
+
+@socketio.on('vote', namespace='/vote')
+def vote_handler(data):
+    # handle the message
+    app.logger.info('vote: %s', data)
+    vote_value = data['value']
+    if vote_value not in ('up', 'down'):
+        return None # TODO return 400
+    vote_db.vote(up=(vote_value == 'up'))
+    vdict = vote_db.get_all()
+    socketio.emit('votes', vdict, namespace='/')
+    # return 'votes', vdict, namespace='/'
 
 
 @socketio.on('connect', namespace='')
@@ -90,11 +106,7 @@ def default_error_handler(err):
     app.logger.error('UHOH: %s', err)
 
 
-# # @app.cli.command('initdb')
-# def initdb_command():
-#     vote_d = VoteStore()
-#     vote_d.reset()
-
+# :::::::::::::::::::::::::::::::::::::::::::::::::: main
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, use_reloader=True)

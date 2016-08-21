@@ -7,8 +7,8 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             namespace = '/vote';
-
-            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            var sio_url = 'http://' + document.domain + ':' + location.port + namespace;
+            var socket = io.connect(sio_url);
 
             socket.on('connect', function() {
                 socket.emit('my event', {data: 'I\'m connected!'});
@@ -19,7 +19,7 @@
             });
 
             $("a.vote").bind("click", function(event) {
-                jQuery.post('/vote', {value: this.id});
+                socket.emit('vote', {value: this.id});
             });
         });
     </script>
