@@ -14,7 +14,7 @@
                 socket.emit('my event', {data: 'I\'m connected!'});
             });
 
-            socket.on('my response', function(msg) {
+            socket.on('votes', function(msg) {
                 $('#log').append('<br>' + $('<div/>').text('Received: ' + JSON.stringify(msg)).html());
             });
 

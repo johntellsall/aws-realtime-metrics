@@ -52,7 +52,7 @@ def background_thread():
         socketio.sleep(10)
         vdict = vote_db.get_all()
         app.logger.debug('votes dict: %s', vdict)
-        socketio.emit('my response', vdict, namespace='/vote')
+        socketio.emit('votes', vdict, namespace='/vote')
 
 
 @app.route('/')
@@ -68,7 +68,7 @@ def vote():
             return None # TODO return 400
         vote_db.vote(up=(vote_value == 'up'))
     vdict = vote_db.get_all()
-    socketio.emit('my response', vdict, namespace='/')
+    socketio.emit('votes', vdict, namespace='/')
     return json_response(vdict)
 
 
