@@ -10,16 +10,20 @@
             var sio_url = 'http://' + document.domain + ':' + location.port + namespace;
             var socket = io.connect(sio_url);
 
+            function handleVotes(votes_dict) {
+                $('#log').append('<br>' + $('<div/>').text(
+                    'Received: ' + JSON.stringify(votes_dict)).html());
+            }
             socket.on('connect', function() {
-                socket.emit('my event', {data: 'I\'m connected!'});
+                socket.emit('my event', {data: "I'm connected!"});
             });
 
             socket.on('votes', function(msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received: ' + JSON.stringify(msg)).html());
+                handleVotes(msg);
             });
 
             $("a.vote").bind("click", function(event) {
-                socket.emit('vote', {value: this.id});
+                socket.emit('vote', {value: this.id}, handleVotes);
             });
         });
     </script>

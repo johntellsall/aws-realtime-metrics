@@ -31,6 +31,7 @@ class VoteStore(object):
         if up:
             self.db.hincrby('vote', 'up_count', 1)
 
+
 app = create_app()
 socketio = SocketIO(app, async_mode='gevent')
 vote_db = VoteStore()
@@ -61,23 +62,10 @@ def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
 
-@app.route('/vote', methods=['GET', 'POST'])
-def vote():
-    if request.method == 'POST':
-        vote_value = request.values['value']
-        if vote_value not in ('up', 'down'):
-            return None # TODO return 400
-        vote_db.vote(up=(vote_value == 'up'))
-    vdict = vote_db.get_all()
-    socketio.emit('votes', vdict, namespace='/')
-    return json_response(vdict)
-
-
 # :::::::::::::::::::::::::::::::::::::::::::::::::: SocketIO
 
 @socketio.on('vote', namespace='/vote')
-def vote_handler(data):
-    # handle the message
+def sio_vote(data):
     app.logger.info('vote: %s', data)
     vote_value = data['value']
     if vote_value not in ('up', 'down'):
@@ -85,11 +73,11 @@ def vote_handler(data):
     vote_db.vote(up=(vote_value == 'up'))
     vdict = vote_db.get_all()
     socketio.emit('votes', vdict, namespace='/')
-    # return 'votes', vdict, namespace='/'
+    return vdict
 
 
 @socketio.on('connect', namespace='')
-def test_connect():
+def client_connect():
     global thread
     app.logger.info('sid=%s: Client connected', request.sid)
     if thread is None:
@@ -97,7 +85,7 @@ def test_connect():
 
 
 @socketio.on('disconnect', namespace='')
-def test_disconnect():
+def client_disconnect():
     app.logger.info('sid=%s: Client disconnected', request.sid)
 
 

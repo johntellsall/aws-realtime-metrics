@@ -1,10 +1,10 @@
 '''
-tests.py -- test AWS Realtime Mettrics funcs and APIs
+tests.py -- test AWS Realtime Metrics funcs and APIs
 
 USAGE
 py.test tests.py
 
-- fast mode:
+- fast mode skips calling network AWS APIs:
 SKIP_API=1 py.test tests.py
 '''
 
@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 def format_unique_name(prefix):
     return '{}-{}'.format(
         prefix, datetime.datetime.now().strftime("%H%M%S-%f"))
+
 
 @mock_s3
 def test_boto3():
