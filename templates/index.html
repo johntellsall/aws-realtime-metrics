@@ -4,6 +4,9 @@
     <title>John Tells All: AWS Queue Realtime Stats</title>
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <style>
+    #log {font-family: monospace;}
+    </style>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
@@ -13,8 +16,11 @@
             var socket = io.connect(sio_url);
 
             function handleVotes(votes_dict) {
+                var down_count = votes_dict.count - votes_dict.up_count;
                 $('#log').append('<br>' + $('<div/>').text(
                     'Received: ' + JSON.stringify(votes_dict)).html());
+                $('#vote-count-up').text( votes_dict.up_count );
+                $('#vote-count-down').text( down_count );
             }
             socket.on('connect', function() {
                 socket.emit('my event', {data: "I'm connected!"});
@@ -47,20 +53,22 @@
 <p class="w3-third">
 
 <p>
-<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center">66</span>
-<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center">66</span>
+<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center" id="vote-count-up">--</span>
+<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center" id="vote-count-down">--</span>
 </p>
 
 <p class="w3-row">
 <p><b>Vote:</b></p>
-<a class="fa fa-thumbs-up vote w3-btn" id="up">UP</a>
- - <a class="fa fa-thumbs-down vote w3-btn" id="down">DOWN</a>
+<a class="fa fa-thumbs-up vote w3-btn" id="up"> UP</a>
+ - <a class="fa fa-thumbs-down vote w3-btn" id="down"> DOWN</a>
 </p>
 
 <span class="w3-row">
+<p>
 <b>SocketIO Messages</b>
+</p>
+<div id="log"></div>
 </span>
-    <div id="log"></div>
 
 </div>
 
