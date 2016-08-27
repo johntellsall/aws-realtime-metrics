@@ -3,6 +3,7 @@
 <head>
     <title>John Tells All: AWS Queue Realtime Stats</title>
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
@@ -31,15 +32,37 @@
 </head>
 <body>
 
-<h1>Cat Voting Booth</h1>
-<img src="http://placekitten.com/300/300">
+<div>
 
-<span class="w3-tag w3-jumbo w3-padding-large w3-blue">66</span>
-<br />
+<p class="w3-row">
+<div class="w3-tag w3-round w3-green" style="padding:3px">
+  <div class="w3-tag w3-round w3-green w3-border w3-border-white">
+    <h1>Cat Voting Booth</h1>
+  </div>
+</div>
+</p>
 
-Vote: <a class="vote" id="up">UP</a> - <a class="vote" id="down">DOWN</a>
-    <h1>Realtime Stats</h1>
-    <h2>Receive:</h2>
+<img class="w3-twothird" src="http://placekitten.com/300/300">
+<i class="fa fa-car" style="font-size:60px;color:red;"></i>
+<p>
+<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center">66</span>
+</p>
+<p>
+<span class="w3-tag w3-jumbo w3-padding w3-round-large w3-blue w3-center">66</span>
+</p>
+
+<p class="w3-row">
+Vote:
+<a class="fa fa-thumbs-up vote w3-btn" id="up">UP</a>
+ - <a class="fa fa-thumbs-down vote w3-btn" id="down">DOWN</a>
+</p>
+
+<span class="w3-row">
+<b>SocketIO Messages</b>
+</span>
     <div id="log"></div>
+
+</div>
+
 </body>
 </html>
