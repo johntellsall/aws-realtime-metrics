@@ -8,8 +8,12 @@ Resource          resource.robot
 *** Test Cases ***
 Valid Page
     Open Browser To Voting Page
-    # Input Username    demo
-    # Input Password    mode
-    # Submit Credentials
-    # Welcome Page Should Be Open
+    Votes Not Available
+    [Teardown]    Close Browser
+
+Register Up Vote
+    Open Browser To Voting Page
+    Vote Up
+    Element Text Should Be    vote-count-up    1
+    Element Text Should Be    vote-count-down    0
     [Teardown]    Close Browser

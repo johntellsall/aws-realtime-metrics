@@ -18,6 +18,13 @@ gem install fake_sqs
 
 python ./app.py
 
+## Unit Test
+
+py.test tests.py 
+
+## UI Test
+
+robot hello-cat.robot 
 
 ## Enjoy
 

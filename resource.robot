@@ -4,6 +4,7 @@ Documentation     A resource file with reusable keywords and variables.
 ...               The system specific keywords created here form our own
 ...               domain specific language. They utilize keywords provided
 ...               by the imported Selenium2Library.
+Library           OperatingSystem
 Library           Selenium2Library
 
 *** Variables ***
@@ -17,26 +18,24 @@ Open Browser To Voting Page
     Open Browser    ${VOTING URL}    ${BROWSER}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
+    Reset Votes
     Voting Page Should Be Open
 
 Voting Page Should Be Open
+    Location Should Be    ${VOTING URL}
     Title Should Be    John Tells All: AWS Queue Realtime Stats
 
 Go To Voting Page
     Go To    ${VOTING URL}
     Voting Page Should Be Open
 
-# Input Username
-#     [Arguments]    ${username}
-#     Input Text    username_field    ${username}
+Reset Votes
+    Run    echo flushall | redis-cli 
 
-# Input Password
-#     [Arguments]    ${password}
-#     Input Text    password_field    ${password}
+Vote Up
+    Click Element    up
 
-# Submit Credentials
-#     Click Button    Voting_button
+Votes Not Available
+    Element Text Should Be    vote-count-up    --
+    Element Text Should Be    vote-count-down    --
 
-# Welcome Page Should Be Open
-#     Location Should Be    ${WELCOME URL}
-#     Title Should Be    Welcome Page

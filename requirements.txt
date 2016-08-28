@@ -17,3 +17,5 @@ Werkzeug==0.10.4
 # robotframework[selenium2library]
 robotframework-selenium2library
 chromedriver
+redis
+gevent
