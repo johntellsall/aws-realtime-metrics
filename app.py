@@ -72,7 +72,7 @@ def sio_vote(data):
         return None # TODO return 400
     vote_db.vote(up=(vote_value == 'up'))
     vdict = vote_db.get_all()
-    socketio.emit('votes', vdict, namespace='/')
+    socketio.emit('votes', vdict, namespace='/vote')
     return vdict
 
 
