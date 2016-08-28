@@ -90,3 +90,6 @@ ENV/
 venv
 *.sublime-*
 cat
+log.html
+output.xml
+report.html

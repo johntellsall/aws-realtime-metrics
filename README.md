@@ -8,7 +8,7 @@ Code adapted from https://github.com/miguelgrinberg/Flask-SocketIO -- thanks @mi
 virtualenv --python=$(which python2) venv
 . venv/bin/activate
 pip install -qr ./requirements.txt
-sudo apt install redis-server
+sudo apt install chromium-chromedriver redis-server
 
 ### dev mode (local, no AWS)
 
