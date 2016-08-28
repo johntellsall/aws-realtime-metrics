@@ -15,22 +15,28 @@
             var sio_url = 'http://' + document.domain + ':' + location.port + namespace;
             var socket = io.connect(sio_url);
 
+            function log(label, obj) {
+                $('#log').append('<br>' + $('<div/>').text(
+                    label + ': ' + JSON.stringify(obj)).html());
+            }
+
             function handleVotes(votes_dict) {
                 var down_count = votes_dict.count - votes_dict.up_count;
-                $('#log').append('<br>' + $('<div/>').text(
-                    'Received: ' + JSON.stringify(votes_dict)).html());
                 $('#vote-count-up').text( votes_dict.up_count );
                 $('#vote-count-down').text( down_count );
             }
+
             socket.on('connect', function() {
                 socket.emit('my event', {data: "I'm connected!"});
             });
 
             socket.on('votes', function(msg) {
+                log('Receive', msg);
                 handleVotes(msg);
             });
 
             $("a.vote").bind("click", function(event) {
+                log('Send', ['vote', {value: this.id}]);
                 socket.emit('vote', {value: this.id}, handleVotes);
             });
         });
@@ -72,6 +78,11 @@
 
 </div>
 
+<p>
 <i>No designers were injured in the creation of this webapp.</i>
+</p>
+<p>
+Images are not public domain, see <a href="http://placekitten.com/attribution.html">attribution.
+</p>
 </body>
 </html>
