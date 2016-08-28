@@ -21,6 +21,10 @@
             }
 
             function handleVotes(votes_dict) {
+                if (typeof(votes_dict.up_count) === 'undefined') {
+                    return;
+                }
+
                 var down_count = votes_dict.count - votes_dict.up_count;
                 $('#vote-count-up').text( votes_dict.up_count );
                 $('#vote-count-down').text( down_count );

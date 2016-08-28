@@ -35,6 +35,9 @@ Reset Votes
 Vote Up
     Click Element    up
 
+Vote Down
+    Click Element    down
+
 Votes Not Available
     Element Text Should Be    vote-count-up    --
     Element Text Should Be    vote-count-down    --
