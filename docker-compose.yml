@@ -3,9 +3,10 @@ version: "3"
 services:
   vote:
     build: .
-    command: python app.py
+    # environment:
+    #   - FLASK_APP=app.py
+    # command: flask run
     volumes:
      - .:/app
     ports:
       - "5000:5000"
-   
