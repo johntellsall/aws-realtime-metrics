@@ -19,33 +19,58 @@ With cats.
 
 # version 1K: run webapp in single Flask container (using Kubernetes)
 
+Point Docker to use Minikube's Docker environment:
+    
+    eval $(minikube docker-env)
+
     kubectl version
     XX will now output Client and Server versions, as it's talking to X
 
-Run a local container image registry. Our webapp runs on port 5000 by default, which conflicts with the registry, so let's move the registry:
+X? Now that Kubernetes and Docker are talking together, let's rebuild our webapp, X
 
-    docker run -d -p 9999:5000 --restart always --name registry registry:2
+    XXX kubectl run catvote --image=catvote --port=5000
+    kubectl expose deployment catvote --type=NodePort
+    curl $(minikube service catvote --url)
 
-X? Now that Kubernetes and Docker are talking together, let's rebuild our webapp, and push to the local container image registry.
+Once our container is running, it's much easier to make changes. Edit code, rebuild the container image, then stuff it into the active deployment:
 
-    docker build -t catvote .
-    docker tag catvote localhost:9999/catvote
-    docker push localhost:9999/catvote
+    perl -pi -e 's/World/Cat/' ./app.py
+    egrep Hello app.py
 
-Now our webapp is built into an image, and the image is stored in a registry so Kubernetes can use it.
+    ID=$(date +%H%M)
+    docker image build -t catvote:$ID .
+    kubectl set image deployment catvote *=catvote:$ID
+    curl $(minikube service catvote --url)
+
+Or, let's use our extremely simple Makefile:
+
+    make apply
+
+Let's watch the pod run by streaming its logs to the terminal. Hit Control-C to take the terminal back.
+
+XX which pod?
+
+    kubectl logs -f catvote-5548ff6b6c-txwns
+     * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+    172.17.0.1 - - [23/Dec/2017 19:28:50] "GET / HTTP/1.1" 200 -
 
 Open the X console, so we can watch as Kubernetes makes use of our new, mission-critical, web-scale cat voting booth webapp:
 
 http://192.168.99.101:30000/#!/namespace/default?namespace=default
 http://192.168.99.101:30000/#!/deployment/default/catvote?namespace=default
 
-    kubectl run catvote --image=localhost:9999/catvote --port=5000
-    kubectl expose deployment catvote --type=NodePort
-    curl $(minikube service catvote --url)
 
 Open our webapp in a browser:
 
     open $(minikube service catvote --url)
+
+Reference: 
+
+- https://kubecloud.io/minikube-workflows-d7166e1da290
+
+- https://www.mankier.com/1/kubectl-set-image
+- 
+### edit webapp
 
 
 # SETUP
@@ -105,6 +130,8 @@ Now we can see Kubernetes internal containers using normal Docker commands. Exam
 
     docker ps | egrep dash
 
+Reference: excellent list of tips for Kubernetes 
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 # INBOX
 
