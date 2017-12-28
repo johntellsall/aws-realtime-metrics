@@ -19,12 +19,16 @@ With cats.
 
 # version 1K: run webapp in single Flask container (using Kubernetes)
 
-Point Docker to use Minikube's Docker environment:
+## setup
+
+Point Docker to re-use Minikube's Docker environment:
     
     eval $(minikube docker-env)
 
     kubectl version
     XX will now output Client and Server versions, as it's talking to X
+
+## develop webapp, the hard way
 
 X? Now that Kubernetes and Docker are talking together, let's rebuild our webapp, X
 
@@ -42,9 +46,14 @@ Once our container is running, it's much easier to make changes. Edit code, rebu
     kubectl set image deployment catvote *=catvote:$ID
     curl $(minikube service catvote --url)
 
-Or, let's use our extremely simple Makefile:
+## develop webapp, the easy way
 
+Instead of the above, we can use our extremely simple Makefile:
+
+    {edit code here}
     make apply
+
+## watch what the webapp is doing
 
 Let's watch the pod run by streaming its logs to the terminal. Hit Control-C to take the terminal back.
 
@@ -64,13 +73,11 @@ Open our webapp in a browser:
 
     open $(minikube service catvote --url)
 
-Reference: 
+References: 
 
 - https://kubecloud.io/minikube-workflows-d7166e1da290
 
 - https://www.mankier.com/1/kubectl-set-image
-- 
-### edit webapp
 
 
 # SETUP
@@ -134,6 +141,11 @@ Reference: excellent list of tips for Kubernetes
 https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 # INBOX
+
+hidden verbosity flag
+
+    kubectl  --v=8 version
+
 
 containerized Robot Framework
 https://github.com/cgowez/robot-docker
