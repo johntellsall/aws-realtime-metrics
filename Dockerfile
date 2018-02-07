@@ -1,12 +1,9 @@
 FROM python:3.6
 
-EXPOSE 5000
-ENV FLASK_APP app.py
-
-COPY ./requirements.txt /tmp/
-RUN pip install -r /tmp/requirements.txt
-
+RUN mkdir -p /app
 WORKDIR /app
 
-COPY . /app/
-CMD ["flask", "run", "--host=0.0.0.0"]
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["python", "./randocat.py"]
