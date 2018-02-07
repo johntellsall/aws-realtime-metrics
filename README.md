@@ -7,34 +7,30 @@ With cats.
 
 ![Cat Voting Booth](http://www.motherjones.com/wp-content/uploads/catsvoting2.jpg)
 
-# version 1D: run webapp in single Flask container (using Docker)
+# version 1D: run webapp in single Pyramid container (using Docker)
 
 ## build and run webapp
 
-    docker build -t catvote . &&  docker run -p 5000:5000 catvote
+    docker build -t catvote . &&  docker run -p 8000:8000 catvote
 
 ## open webapp in browser
 
-    open http://$(docker-machine ip):5000
+        open http://localhost:8000
+        # NON-EDGE:    open http://$(docker-machine ip):8000
 
 # version 1K: run webapp in single Flask container (using Kubernetes)
 
-## setup
-
-Point Docker to re-use Minikube's Docker environment:
-    
-    eval $(minikube docker-env)
-
-    kubectl version
-    XX will now output Client and Server versions, as it's talking to X
 
 ## develop webapp, the hard way
 
+    XX docker run -it easykubernetes_app bash
+
 X? Now that Kubernetes and Docker are talking together, let's rebuild our webapp, X
 
-    XXX kubectl run catvote --image=catvote --port=5000
+    kubectl run catvote --image=catvote --port=8000
     kubectl expose deployment catvote --type=NodePort
-    curl $(minikube service catvote --url)
+
+    # NON-EDGE:    curl $(minikube service catvote --url)
 
 Once our container is running, it's much easier to make changes. Edit code, rebuild the container image, then stuff it into the active deployment:
 
@@ -60,7 +56,7 @@ Let's watch the pod run by streaming its logs to the terminal. Hit Control-C to 
 XX which pod?
 
     kubectl logs -f catvote-5548ff6b6c-txwns
-     * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+     * Running on http://0.0.0.0:8000/ (Press CTRL+C to quit)
     172.17.0.1 - - [23/Dec/2017 19:28:50] "GET / HTTP/1.1" 200 -
 
 Open the X console, so we can watch as Kubernetes makes use of our new, mission-critical, web-scale cat voting booth webapp:
@@ -129,6 +125,41 @@ Yay! That was fun. Okay, clean up our simple webapp:
 
     kubectl delete deployment hello-minikube
 
+
+
+# INBOX
+
+- `run-container` = higher level? https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#run-container
+
+- reusing the Docker repos -- no more pushing/pulling!
+https://github.com/kubernetes/minikube/blob/master/docs/reusing_the_docker_daemon.md
+
+hidden verbosity flag
+
+    kubectl  --v=8 version
+
+
+containerized Robot Framework
+https://github.com/cgowez/robot-docker
+
+# Resources
+
+https://www.datawire.io/docker-mac-kubernetes-ingress/
+
+https://logz.io/blog/kubernetes-docker-mac/
+
+
+# Historical
+
+## setup (non-Edge)
+
+Point Docker to re-use Minikube's Docker environment:
+    
+    eval $(minikube docker-env)
+
+    kubectl version
+    XX will now output Client and Server versions, as it's talking to X
+
 ## XX re-use Docker daemon
 
     eval $(minikube docker-env)
@@ -139,13 +170,3 @@ Now we can see Kubernetes internal containers using normal Docker commands. Exam
 
 Reference: excellent list of tips for Kubernetes 
 https://kubernetes.io/docs/reference/kubectl/cheatsheet/
-
-# INBOX
-
-hidden verbosity flag
-
-    kubectl  --v=8 version
-
-
-containerized Robot Framework
-https://github.com/cgowez/robot-docker
