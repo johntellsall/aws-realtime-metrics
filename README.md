@@ -1,3 +1,28 @@
+# INBOX
+
+    minikube start
+
+## view Kubernetes Dashboard
+
+    minikube dashboard
+
+## verify minikube
+
+    kubectl run hello-minikube --image=k8s.gcr.io/echoserver:1.4 --port=8080
+    kubectl expose deployment hello-minikube --type=NodePort
+    kubectl get pod
+    # once pod is Running
+    curl $(minikube service hello-minikube --url)
+
+## TODO
+
+* EFD (Elasticsearch, Fluentd, Kibana) https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch
+
+* Heapster monitoring https://kubernetes.io/docs/tasks/debug-application-cluster/resource-usage-monitoring/
+
+* Node Problem Detector (e.g. NTP) https://github.com/kubernetes/node-problem-detector
+
+
 # Easy Kubernetes for Webapps (includes Cat Voting Booth)
 
 Modern webapp development is... complex.  This tutorial demonstrates how to quickly get up to speed with Kubernetes, learning webapp development Best Practices along the way.
@@ -25,6 +50,32 @@ Ensure Docker VM is running
     open http://localhost:5000
 
 # version 1K: run webapp in single Flask container (using Kubernetes)
+
+## install
+
+TODO explain pieces & WHY
+
+- hypervisor
+    + TBD
+
+- Kubectl
+    + https://kubernetes.io/docs/tasks/tools/install-kubectl/
+
+- Minikube
+
+    brew cask install minikube
+
+    + https://github.com/kubernetes/minikube/releases
+
+
+## setup
+
+Point Docker to re-use Minikube's Docker environment:
+    
+    eval $(minikube docker-env)
+
+    kubectl version
+    XX will now output Client and Server versions, as it's talking to X
 
 
 ## develop webapp, the hard way
