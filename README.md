@@ -2,6 +2,10 @@
 
     minikube start
 
+## verify Kubernetes cluster is running
+
+    minikube status
+
 ## view Kubernetes Dashboard
 
     minikube dashboard
@@ -13,6 +17,11 @@
     kubectl get pod
     # once pod is Running
     curl $(minikube service hello-minikube --url)
+
+*Clean up*
+
+    kubectl delete service hello-minikube
+    kubectl delete deployment hello-minikube
 
 ## TODO
 
@@ -206,6 +215,12 @@ https://www.datawire.io/docker-mac-kubernetes-ingress/
 
 https://logz.io/blog/kubernetes-docker-mac/
 
+excellent list of tips for Kubernetes 
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
+
+
+
 
 # Historical
 
@@ -226,8 +241,6 @@ Now we can see Kubernetes internal containers using normal Docker commands. Exam
 
     docker ps | egrep dash
 
-Reference: excellent list of tips for Kubernetes 
-https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 # OUTBOX
 
