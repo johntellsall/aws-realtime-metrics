@@ -9,14 +9,20 @@ With cats.
 
 # version 1D: run webapp in single Pyramid container (using Docker)
 
+## setup
+
+Ensure Docker VM is running
+
+    docker-machine start
+
 ## build and run webapp
 
-    docker build -t catvote . &&  docker run -p 8000:8000 catvote
+
+    docker build -t randocat . &&  docker run -p 5000:5000 randocat
 
 ## open webapp in browser
 
-        open http://localhost:8000
-        # NON-EDGE:    open http://$(docker-machine ip):8000
+    open http://localhost:5000
 
 # version 1K: run webapp in single Flask container (using Kubernetes)
 
@@ -27,10 +33,10 @@ With cats.
 
 X? Now that Kubernetes and Docker are talking together, let's rebuild our webapp, X
 
-    kubectl run catvote --image=catvote --port=8000
-    kubectl expose deployment catvote --type=NodePort
 
-    # NON-EDGE:    curl $(minikube service catvote --url)
+    XXX kubectl run randocat --image=randocat --port=5000
+    kubectl expose deployment randocat --type=NodePort
+    curl $(minikube service randocat --url)
 
 Once our container is running, it's much easier to make changes. Edit code, rebuild the container image, then stuff it into the active deployment:
 
@@ -38,9 +44,9 @@ Once our container is running, it's much easier to make changes. Edit code, rebu
     egrep Hello app.py
 
     ID=$(date +%H%M)
-    docker image build -t catvote:$ID .
-    kubectl set image deployment catvote *=catvote:$ID
-    curl $(minikube service catvote --url)
+    docker image build -t randocat:$ID .
+    kubectl set image deployment randocat *=randocat:$ID
+    curl $(minikube service randocat --url)
 
 ## develop webapp, the easy way
 
@@ -55,19 +61,20 @@ Let's watch the pod run by streaming its logs to the terminal. Hit Control-C to 
 
 XX which pod?
 
-    kubectl logs -f catvote-5548ff6b6c-txwns
-     * Running on http://0.0.0.0:8000/ (Press CTRL+C to quit)
+
+    kubectl logs -f randocat-5548ff6b6c-txwns
+     * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
     172.17.0.1 - - [23/Dec/2017 19:28:50] "GET / HTTP/1.1" 200 -
 
 Open the X console, so we can watch as Kubernetes makes use of our new, mission-critical, web-scale cat voting booth webapp:
 
 http://192.168.99.101:30000/#!/namespace/default?namespace=default
-http://192.168.99.101:30000/#!/deployment/default/catvote?namespace=default
+http://192.168.99.101:30000/#!/deployment/default/randocat?namespace=default
 
 
 Open our webapp in a browser:
 
-    open $(minikube service catvote --url)
+    open $(minikube service randocat --url)
 
 References: 
 
@@ -170,3 +177,7 @@ Now we can see Kubernetes internal containers using normal Docker commands. Exam
 
 Reference: excellent list of tips for Kubernetes 
 https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
+# OUTBOX
+
+        open http://$(docker-machine ip):5000
