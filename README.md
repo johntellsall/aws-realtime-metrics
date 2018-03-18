@@ -21,7 +21,18 @@
 *Clean up*
 
     kubectl delete service hello-minikube
-    kubectl delete deployment hello-minikube
+    kubectl delete deploy hello-minikube
+
+## build Randocat Docker image
+
+    docker build -t randocat:v2 .
+
+## Ideas
+
+- !! mount host folder https://github.com/kubernetes/minikube/blob/master/docs/host_folder_mount.md
+
+- K8s w/ insecure/internal registries - https://github.com/kubernetes/minikube/blob/master/docs/insecure_registry.md
+
 
 ## TODO
 
