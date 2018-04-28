@@ -24,3 +24,15 @@ Ensure Docker VM is running
 
 ## Then, add a database
 
+# Troubleshooting
+
+## Page doens't load in browser
+
+This page isn’t working
+localhost didn’t send any data.
+ERR_EMPTY_RESPONSE
+
+=> wrong IP
+=> mark port EXPOSEd in Dockerfile
+=> check code uses the same port that's EXPOSEd. Don't ask how I learned this one :)
+=> Docker container isn't running
