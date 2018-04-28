@@ -8,6 +8,6 @@ EXPOSE 8080
 COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 
-COPY . /app/
+# COPY . /app/
 
 CMD ["python", "./randocat.py"]

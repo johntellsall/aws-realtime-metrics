@@ -16,7 +16,7 @@ PORT = 8080
 
 
 def log_info(formatstr, *args, **kwargs):
-    print(formatstr.format(*args, **kwargs), file=sys.stderr)
+    print(formatstr % args, file=sys.stderr)
 
 
 def hello_world(request):
