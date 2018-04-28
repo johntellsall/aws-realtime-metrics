@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from wsgiref.simple_server import make_server
@@ -14,12 +15,10 @@ PAGE_HTML = '''
 '''
 PORT = 8080
 
-
-def log_info(formatstr, *args, **kwargs):
-    print(formatstr % args, file=sys.stderr)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
-def hello_world(request):
+def view_random_cat(request):
     cat_url = CAT_DATABASE[0]
     return Response(PAGE_HTML.format(image_url=cat_url))
 
@@ -27,8 +26,8 @@ def hello_world(request):
 if __name__ == '__main__':
     with Configurator() as config:
         config.add_route('hello', '/')
-        config.add_view(hello_world, route_name='hello')
+        config.add_view(view_random_cat, route_name='hello')
         app = config.make_wsgi_app()
     server = make_server('0.0.0.0', PORT, app)
-    log_info('%s now running on port %s!', sys.argv[0], PORT)
+    logging.info('%s now running on port %s!', sys.argv[0], PORT)
     server.serve_forever()
