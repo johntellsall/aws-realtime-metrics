@@ -16,7 +16,7 @@ With cats.
 
     open http://localhost:6543
 
-## kill container
+## kill all containers
 
     docker kill $(docker ps -aq)
 
