@@ -1,4 +1,4 @@
-# Easy Kubernetes for Webapps (includes Cat Voting Booth)
+# Easy Kubernetes for Webapps
 
 Modern webapp development is... complex.  This tutorial demonstrates how to quickly get up to speed with Docker and Kubernetes, learning webapp development Best Practices along the way.
 
@@ -16,14 +16,14 @@ With cats.
 
     open http://localhost:6543
 
-## add tests
+## kill container
 
+    docker kill $(docker ps -aq)
 
-## LATER: Then, add a database
 
 # Troubleshooting
 
-## Page doens't load in browser
+## Page doesn't load in browser
 
 This page isn’t working
 localhost didn’t send any data.
