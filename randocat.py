@@ -13,7 +13,7 @@ CAT_DATABASE = [
 PAGE_HTML = '''
 <img src="{image_url}">
 '''
-PORT = 8080
+PORT = 6543
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
