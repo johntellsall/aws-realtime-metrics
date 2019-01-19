@@ -7,22 +7,19 @@ With cats.
 
 ## First, start with a single Docker container
 
-## setup
 
-Ensure Docker VM is running
+## build and run webapp (Docker)
 
-    docker-machine start
-
-## build and run webapp
-
-
-    docker build -t randocat . &&  docker run -p 5000:5000 randocat
+    docker build -t randocat . &&  docker run -p 6543:6543 randocat
 
 ## open webapp in browser
 
-    open http://localhost:5000
+    open http://localhost:6543
 
-## Then, add a database
+## add tests
+
+
+## LATER: Then, add a database
 
 # Troubleshooting
 

@@ -6,3 +6,6 @@ EXPOSE 8080
 # install requirements first (faster dev)
 COPY requirements.txt /app/
 RUN pip install -qr requirements.txt
+
+COPY . /app/
+CMD pytest && python randocat.py
